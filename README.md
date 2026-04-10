@@ -4,10 +4,16 @@ A Claude Code plugin implementing [Karpathy's LLM Wiki pattern](https://gist.git
 
 Instead of RAG (re-deriving answers from raw documents every time), this system builds and maintains a **wiki**: a structured, interlinked collection of markdown files that gets richer with every source you add and every question you ask.
 
+Forked from [kfchou/wiki-skills](https://github.com/kfchou/wiki-skills/) and simplified (see below).
+
 ## Installation
 
-```bash
-/plugin install kfchou/wiki-skills
+Install as a [Claude Code plugin](https://code.claude.com/docs/en/plugins.md):
+
+```
+/plugin marketplace add MarkLeone/wiki-skills
+/plugin install wiki-skills@wiki-skills
+/reload-plugins
 ```
 
 ## Skills
@@ -16,13 +22,11 @@ Instead of RAG (re-deriving answers from raw documents every time), this system 
 |---|---|
 | `wiki-init` | Bootstrap a new wiki for any domain |
 | `wiki-ingest` | Add a source (paper, URL, file, transcript) to the wiki |
-| `wiki-query` | Ask a question against the wiki; optionally save the answer back |
-| `wiki-lint` | Health audit: contradictions, orphans, broken links, coverage gaps |
+| `wiki-query` | Ask a question against the wiki |
+| `wiki-lint` | Health audit: broken links, orphans, missing frontmatter |
 | `wiki-update` | Revise existing pages when knowledge changes |
 
 ## How It Works
-
-### Three Layers
 
 ```
 <wiki-root>/
@@ -36,38 +40,32 @@ Instead of RAG (re-deriving answers from raw documents every time), this system 
 └── assets/          # Images, PDFs, attachments
 ```
 
-### Typical Workflow
-
 ```
 wiki-init          → bootstrap a new wiki
 wiki-ingest        → add sources one at a time (repeat)
-wiki-query         → ask questions; save good answers back as pages
-wiki-lint          → periodic health check (every 5-10 ingests)
+wiki-query         → ask questions against the wiki
+wiki-lint          → periodic health check
 wiki-update        → revise pages when knowledge changes
 ```
 
-### Key Behaviors
+## Simplifications from upstream
 
-- **`wiki-ingest`** surfaces key takeaways and asks what to emphasize *before* writing anything. After creating a source page, it runs a backlink audit — scanning existing pages to add bidirectional links.
-- **`wiki-query`** always reads the wiki (never answers from memory). Always offers to file the answer back as a new page with `[[citations]]`.
-- **`wiki-lint`** writes a severity-tiered report (`🔴 errors / 🟡 warnings / 🔵 info`) to `wiki/pages/lint-<date>.md`, offers concrete fixes, and logs unconditionally.
-- **`wiki-update`** always shows diffs before writing, always cites the source of new information, sweeps all pages for the same stale claim, and logs unconditionally.
+This fork strips the skills down to bare essentials, removing ceremony that slowed the LLM without adding proportional value:
 
-## Use Cases
+- **No confirmation gates** — `wiki-ingest` no longer pauses to surface takeaways and ask "anything to emphasize?" before writing. Just ingest; use `wiki-update` to adjust later.
+- **No per-item approval** — `wiki-lint` offers to fix all issues at once instead of asking per-item. `wiki-update` shows diffs but doesn't require per-page confirmation.
+- **No mandatory report pages** — `wiki-lint` reports inline instead of always creating a `lint-<date>.md` page.
+- **No "always offer to save"** — `wiki-query` answers the question and stops. No unsaved-query logging.
+- **No contradiction sweep / downstream checks** — `wiki-update` fixes the requested pages; `wiki-lint` catches the rest.
+- **No emoji severity tiers** — `wiki-lint` uses plain text.
+- **GitHub-style links** — `[slug](slug.md)` instead of `[[slug]]`.
+- **Simpler init** — asks all config questions at once instead of one at a time.
 
-Works for any domain where you're accumulating knowledge over time:
-
-- **Research** — papers, articles, reports on a topic
-- **Codebase documentation** — modules, APIs, architecture decisions, data flows
-- **Reading notes** — books, papers, podcasts
-- **Competitive analysis** — tracking companies, products, developments
-- **Personal knowledge** — goals, health, self-improvement
+The backlink audit in `wiki-ingest` is preserved — that's the step that makes the wiki compound.
 
 ## Inspired By
 
 [Andrej Karpathy's LLM Wiki pattern](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f) (April 2026)
-
-> "The wiki keeps getting richer with every source you add and every question you ask."
 
 ## License
 

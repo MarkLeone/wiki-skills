@@ -1,0 +1,23 @@
+{
+  "name": "wiki-skills",
+  "owner": {
+    "name": "MarkLeone",
+    "url": "https://github.com/MarkLeone"
+  },
+  "metadata": {
+    "description": "LLM-maintained personal wiki skills for Claude Code",
+    "version": "1.1.0"
+  },
+  "plugins": [
+    {
+      "name": "wiki-skills",
+      "source": {
+        "source": "url",
+        "url": "https://github.com/MarkLeone/wiki-skills.git"
+      },
+      "description": "Five skills implementing Karpathy's LLM Wiki pattern: wiki-init, wiki-ingest, wiki-query, wiki-lint, wiki-update",
+      "version": "1.1.0",
+      "strict": true
+    }
+  ]
+}

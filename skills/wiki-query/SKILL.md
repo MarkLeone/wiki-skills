@@ -1,65 +1,24 @@
 ---
 name: wiki-query
-description: Use when asking a question against a personal wiki built with wiki-init and wiki-ingest. Do not answer from general knowledge — always read the wiki pages first.
+description: Ask a question against the wiki. Always reads pages first — never answers from memory.
 ---
 
 # Wiki Query
 
-Ask a question. Read the wiki. Synthesize with citations. Offer to file the answer back.
-
 ## Pre-condition
 
-Find `SCHEMA.md` (search from cwd upward, or `~/wikis/`). If not found, tell the user to run `wiki-init` first. Read it to get wiki root path and cross-reference convention.
+Find `SCHEMA.md` to locate the wiki root.
 
 ## Process
 
-### 1. Read `wiki/index.md` first
+### 1. Find relevant pages
 
-Scan the full index to identify which pages are likely relevant. Do NOT answer from general knowledge — the wiki is the source of truth here, even if you think you know the answer.
+Read `wiki/index.md`. Identify pages likely to contain the answer.
 
-### 2. Read relevant pages
+### 2. Read and follow links
 
-Read the identified pages in full. Follow one level of `[[slug]]` links if they point to pages that seem relevant to the question.
+Read identified pages. Follow one level of cross-reference links if they seem relevant.
 
-### 3. Synthesize the answer
+### 3. Answer
 
-Write a response that:
-- Is grounded in the wiki pages you read
-- Cites inline using `[[slug]]` for every claim sourced from a specific page
-- Notes agreements and disagreements between pages
-- Flags gaps: "The wiki has no page on X" or "[[page]] doesn't cover Y yet"
-- Suggests follow-up sources to ingest or questions to investigate
-
-Format for the question type:
-- Factual → prose with citations
-- Comparison → table
-- How-it-works → numbered steps
-- What-do-we-know-about-X → structured summary with open questions
-
-### 4. Always offer to save
-
-After answering, say:
-
-> "Worth saving as `wiki/pages/<suggested-slug>.md`?"
-
-If yes:
-- Write the page with frontmatter: `tags: [query, analysis]`, `sources: [all cited slugs]`
-- Add entry to `wiki/index.md` under the correct category (Analyses or similar)
-- Append to `wiki/log.md`:
-  ```
-  ## [<today>] query | <question summary>
-  Filed as: [[<slug>]]
-  ```
-
-If no:
-- Append to `wiki/log.md`:
-  ```
-  ## [<today>] query | <question summary>
-  Not filed.
-  ```
-
-## Common Mistakes
-
-- **Answering from memory** — Always read the wiki pages. The wiki may contradict what you think you know, and that contradiction is valuable signal.
-- **Skipping the save offer** — Good query answers compound the wiki's value. Always offer.
-- **No citations** — Every factual claim should trace back to a `[[slug]]`.
+Synthesize an answer grounded in wiki content. Cite sources using `[slug](slug.md)` references. Do not use general knowledge for claims the wiki covers — if the wiki doesn't have it, say so.
